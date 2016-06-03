@@ -1,2 +1,2 @@
-This software uses Rhodecode license.
-You are not allowed to use it without obtaining license from Rhodecode.
+# Published under Commercial License.
+# Read the full license text at https://rhodecode.com/licenses.

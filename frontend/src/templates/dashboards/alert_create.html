@@ -1,0 +1,29 @@
+<ng-include src="'templates/loader.html'" ng-if="!alert_ctrlr.dataLoaded()"></ng-include>
+
+<div ng-if="alert_ctrlr.dataLoaded()">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <c3chart data-domid="chart" data-data="alert_ctrlr.chartC3Data" data-config="alert_ctrlr.chartC3Config">
+            </c3chart>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group">
+                <label>Name</label><input class="form-control" type="text" ng-model="alert_ctrlr.name" placeholder="Name of your rule">
+            </div>
+            <rule rule="alert_ctrlr.defaultRule" rule-definitions="alert_ctrlr.ruleDefinitions" parent-rule="null" parent-obj="null" config="{disable_subrules:false}"></rule>
+            <a class="btn btn-info" ng-click="alert_ctrlr.previewRule()">Preview Rule</a>
+            <a class="btn btn-success" ng-click="alert_ctrlr.createRule()">Create Rule</a>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div ng-repeat="action in alert_ctrlr.actions">
+                <chart-alert-action action="action" actions="alert_ctrlr.actions" rule-definitions="alert_ctrlr.ruleDefinitions" possible-channels="alert_ctrlr.alertChannels"/>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+<ng-include src="'templates/loader.html'" ng-if="dashboard.loading.dashboard"></ng-include>
+
+<div ng-if="dashboard.loading.dashboard === false">
+
+    <div class="pull-right">
+        <a class="btn btn-default btn-sm"
+           ng-if="AeUser.hasContextPermission('update', dashboard.resource.current_permissions)"
+           data-ui-sref='dashboard.update({resourceId: dashboard.resource.resource_id})'
+           data-uib-tooltip="Update dashboard"><span class="fa fa-cog"></span> Update</a>
+
+            <span class="dropdown" data-uib-dropdown on-toggle="toggled(open)" auto-close="disabled" ng-if="dashboard.resource.public">
+                <a class="btn btn-success btn-sm" data-uib-dropdown-toggle><span class="fa fa-link"></span></a>
+              <ul class="dropdown-menu">
+                  <li>
+                      <div class="panel-body">
+                          <strong>Public url:</strong>
+                          <input type="text" class="form-control" value="{{dashboard.resource.public_url}}" style="width: 600px" onclick="select()" readonly="readonly">
+                      </div>
+                  </li>
+              </ul>
+            </span>
+
+    </div>
+
+    <h1 class="text-center m-t-0">{{dashboard.resource.resource_name}}</h1>
+
+    <div class="row" ng-repeat="row in dashboard.resource.layoutConfig">
+        <h4 class="text-center">{{row.name}}</h4>
+        <div ng-repeat="column in row.columns" class="col-sm-{{column.width}}">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{dashboard.resource.chartData[column.chartId].name}}
+                    <span ng-show="dashboard.resource.chartData[column.chartId].refreshing" class="fa fa-2x fa-spinner pull-right fa-spin"></span>
+                </div>
+
+                <div class="panel-body text-center">
+                    <ng-include src="'templates/loader.html'" ng-if="dashboard.resource.chartData[column.chartId].loading === true"></ng-include>
+
+                    <c3chart ng-if="dashboard.resource.chartData[column.chartId].loading === false"
+                             update="true"
+                             data-domid="id_{{column.chartId}}"
+                             data-data="dashboard.resource.chartData[column.chartId].data"
+                             data-config="dashboard.resource.chartData[column.chartId].config">
+                    </c3chart>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+

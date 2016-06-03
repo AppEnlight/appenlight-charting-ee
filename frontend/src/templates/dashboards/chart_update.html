@@ -1,0 +1,308 @@
+<script type="text/ng-template" id="chartUpdateJSONConfig.html">
+
+    <div class="modal-body">
+
+        <textarea class="well" ng-model="ctrl.jsonConfig" style="width:100%; height: 350px">
+        </textarea>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-warning" ng-click="ctrl.ok()">Load from JSON</button>
+        <button class="btn btn-warning" ng-click="ctrl.cancel()">Close</button>
+    </div>
+</script>
+
+<ng-include src="'templates/loader.html'" ng-if="chart.loading.dashboard === true"></ng-include>
+
+
+<div ng-show="!chart.loading.dashboard">
+
+
+    <div class="panel panel-default">
+        <div class="panel-heading" ng-include="'/ae_charting_ee/templates/dashboards/breadcrumbs.html'"></div>
+        <div class="panel-body">
+            <form class="form-horizontal agg-form" novalidate name="aggForm">
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Name:</label>
+
+                    <div class=" col-sm-9 col-lg-10 form-inline">
+                        <input type="text" name="name" ng-model="chart.name" class="form-control row-title" placeholder="Chart name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Application:</label>
+
+                    <div class=" col-sm-9 col-lg-10 form-inline">
+                        <select ng-model="chart.chartConfig.resource" ng-change="chart.getCommonKeys()" ng-options="r.resource_id as r.resource_name for r in AeUser.applications" class="SelectField form-control input-sm"></select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Data source:</label>
+
+                    <div class=" col-sm-9 col-lg-10 form-inline">
+                        <select ng-model="chart.chartConfig.datasource" ng-change="chart.getCommonKeys()" ng-options="key as value for (key, value) in chart.dataSources" class="SelectField form-control input-sm"></select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Chart Type</label>
+
+                    <div class=" col-sm-9 col-lg-10 form-inline">
+                        <select ng-model="chart.chartConfig.chartType.type" ng-options="item.type as item.name for item in chart.chartTypes" class="form-control"></select>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Create data buckets with:</label>
+
+                    <div class=" col-sm-9 col-lg-10 form-inline">
+                        <select ng-model="chart.chartConfig.parentAgg.type" ng-options="item.type as item.name for item in chart.aggTypes" class="form-control"
+                                ng-change="chart.AggTypeChanged(chart.chartConfig.parentAgg, chart.aggTypes)"></select>
+                        <input type="text" name="field_label" ng-model="chart.chartConfig.parentAgg.config.label" class="form-control" placeholder="Optional label">
+                    </div>
+                </div>
+
+
+                <div ng-show="chart.chartConfig.parentAgg.type == 'time_histogram'" class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Options</label>
+
+                    <div class=" col-sm-9 col-lg-10 form-inline">
+                        Interval size
+                        <select ng-model="chart.chartConfig.parentAgg.config.interval" ng-options="i.key as i.label for i in chart.timeOptions | objectToOrderedArray:'minutes'" class="form-control slim-input"></select>
+                    </div>
+                </div>
+                <div ng-show="chart.chartConfig.parentAgg.type == 'histogram'" class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Options</label>
+                    HISTOGRAM
+                </div>
+                <div ng-show="chart.chartConfig.parentAgg.type == 'terms'" class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Options</label>
+
+                    <div class=" col-sm-9 col-lg-10 form-inline">
+                        <input type="text" name="field_name" ng-model="chart.chartConfig.parentAgg.config.field" placeholder="Tag field to group on" uib-typeahead="tag for tag in chart.commonTags" class="form-control" autocomplete="off">
+                        Top N buckets:
+                        <input type="text" name="size" ng-model="chart.chartConfig.parentAgg.config.size" placeholder="Result size" class="form-control">
+                    </div>
+                </div>
+                </span>
+                <div ng-show="chart.chartConfig.parentAgg.type == 'range'" class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Options</label>
+                    RANGE
+                </div>
+                <div ng-show="chart.chartConfig.parentAgg.type == 'date_range'" class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Options</label>
+                    date RANGE
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Limit data to:</label>
+
+                    <div class="col-sm-9 col-lg-10 form-inline">
+                        <select ng-model="chart.chartConfig.timeRange" ng-options="i.key as i.label for i in chart.timeRanges | objectToOrderedArray:'minutes'" class="form-control slim-input"></select>
+
+                        till
+
+                        <select ng-model="chart.chartConfig.startMoment" ng-options="key as value for (key, value) in chart.startMoments" class="form-control slim-input">
+                        </select>
+
+                        minus
+
+                        <input type="text" name="size" ng-model="chart.chartConfig.startMomentValue" placeholder="Value" class="form-control slim-input">
+
+                        <select ng-model="chart.chartConfig.startMomentUnit" ng-options="key as value for (key, value) in chart.startMomentUnit" class="form-control slim-input">
+                        </select>
+
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Postprocess:</label>
+
+                    <div class="col-sm-9 col-lg-10 form-inline">
+                        <select ng-model="chart.chartConfig.postProcess.type" ng-options="item.type as item.name for item in chart.postProcessTypes" class="form-control">
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2">Metrics</label>
+
+                    <div class="col-sm-9 col-lg-10 form-inline">
+                        <div ng-repeat="agg in chart.chartConfig.aggs">
+                            <div class="row">
+                                <div class="col-xs-6 m-b-1">
+
+                                    <div class="input-group">
+                                        <div class="input-group-addon">Aggregation type</div>
+                                        <select ng-model="agg.type" ng-options="item.type as item.name for item in chart.subAggTypes" class="form-control" ng-change="chart.AggTypeChanged(agg, chart.subAggTypes)"></select>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-xs-6 text-right m-b-1">
+
+                                    <a class="btn btn-default btn-sm" data-uib-tooltip="Use computed value instead of field value" ng-click="chart.setComputed(agg)">
+                                        <span class="fa fa-th-list" style="{{!agg.computed ? 'opacity:0.3' : ''}}"></span></a>
+                                    <a ng-show="agg.type == 'terms'" class="btn btn-default btn-sm" data-uib-tooltip="Use additional aggregator to compute term value instead" ng-click="chart.setDeepAgg(agg)">
+                                        <span class="fa fa-level-down" style="{{!agg.deepAggEnabled ? 'opacity:0.3' : ''}}"></span></a>
+                                    <a class="btn btn-default btn-sm" ng-click="chart.setAggregationGrouping(agg)" data-uib-tooltip="Group values together">
+                                        <span class="fa fa-align-justify" style="{{!agg.grouping ? 'opacity:0.3' : ''}}"></span></a>
+                                    <a class="btn btn-default btn-sm" ng-click="chart.setParentBucketOrdering(agg)" data-uib-tooltip="Sort parent buckets on this metric">
+                                                <span class="fa" ng-class="{'fa-arrow-circle-down':chart.chartConfig.parentAgg.config.order_by.order == 'desc','fa-arrow-circle-up':chart.chartConfig.parentAgg.config.order_by.order != 'desc'}"
+                                                      style="{{chart.chartConfig.parentAgg.config.order_by.agg != agg.id ? 'opacity:0.3' : ''}}"></span></a>
+
+
+                                            <span class="dropdown pull-right" data-uib-dropdown on-toggle="toggled(open)">
+                                                <a class="btn btn-danger btn-sm" data-uib-dropdown-toggle><span class="fa fa-trash-o"></span></a>
+                                              <ul class="dropdown-menu">
+                                                  <li><a href>No</a></li>
+                                                  <li><a href ng-click="chart.removeAggregation(agg)">Yes</a></li>
+                                              </ul>
+                                            </span>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+
+                                    <div ng-show="agg.type == 'terms'" class="m-b-1">
+                                        Top N buckets:
+                                        <input type="text" name="size" ng-model="agg.config.size" placeholder="Result size" class="form-control">
+                                    </div>
+
+                                    <div ng-show="!agg.computed">
+                                        <span>On field</span>
+
+                                        <input type="text" name="field_name" ng-model="agg.config.field" placeholder="Tag field to group on" uib-typeahead="tag for tag in chart.commonTags" class="form-control" autocomplete="off">
+                                        <input type="text" name="field_label" ng-model="agg.config.label" class="form-control" placeholder="Optional label">
+                                    </div>
+
+                                                <span ng-show="agg.computed">
+                                                <div ng-repeat="field in agg.computed_fields" class="m-b-1">
+
+                                                    <span ng-show="$first">On field</span>
+                                                    <select ng-show="!$first" ng-model="field.op" ng-options="o[0] as o[1] for o in chart.ar_operators" class="form-control slim-input"></select>
+                                                    <input type="text" name="field_name" ng-model="field.field" placeholder="Tag field to group on" uib-typeahead="tag for tag in chart.commonTags" class="form-control" autocomplete=“off”>
+                                                    <input ng-show="$first" type="text" name="field_label" ng-model="agg.config.label" class="form-control" placeholder="Optional label">
+
+                                                    <a class="btn btn-danger" ng-click="chart.removeComputedField(agg, field)" ng-show="!$first"><span class="fa fa-trash-o"></span></a>
+                                                </div>
+
+                                                    <a class="btn btn-info" ng-click="chart.addComputedField(agg)"><span class="fa fa-plus-circle"></span> Add another field</a>
+                                                </span>
+
+                                    <div ng-show="agg.deepAggEnabled" class="m-t-1">
+                                        <!--deep agg -->
+                                        <div class="input-group">
+                                            <div class="input-group-addon">Sub-aggregation type</div>
+                                            <select ng-model="agg.deepAgg.type" ng-options="item.type as item.name for item in chart.subDeepAggTypes" class="form-control slim-input"
+                                                    ng-change="chart.AggTypeChanged(agg.deepAgg, chart.subAggTypes)"></select>
+                                        </div>
+
+                                        <input type="text" name="field_name" ng-model="agg.deepAgg.config.field" placeholder="Tag field to group on" uib-typeahead="tag for tag in chart.commonTags" class="form-control" ng-show="!agg.deepAgg.computed" autocomplete=“off”>
+                                        <input type="text" name="field_label" ng-model="agg.deepAgg.config.label" class="form-control" placeholder="Optional label">
+
+
+                                        <a class="btn btn-default" data-uib-tooltip="Use computed value instead of field value" ng-click="chart.setComputed(agg.deepAgg)"> <span class="fa fa-th-list" style="{{!agg.deepAgg.computed ? 'opacity:0.3' : ''}}"></span></a>
+
+                                                    <span ng-show="agg.deepAgg.computed">
+                                                            <div ng-repeat="field in agg.deepAgg.computed_fields" class="m-t-1 m-b-1">
+
+                                                                <span ng-show="$first">On field</span>
+
+                                                                <select ng-show="!$first" ng-model="field.op" ng-options="o[0] as o[1] for o in chart.ar_operators" class="form-control slim-input"></select>
+                                                                <input type="text" name="field_name" ng-model="field.field" placeholder="Tag field to group on" uib-typeahead="tag for tag in chart.commonTags" class="form-control" autocomplete=“off”>
+
+                                                                <a class="btn btn-danger" ng-click="chart.removeComputedField(agg.deepAgg, field)" ng-show="!$first"><span class="fa fa-trash-o"></span></a>
+                                                            </div>
+
+                                                            <a class="btn btn-info" ng-click="chart.addComputedField(agg.deepAgg)"><span class="fa fa-plus-circle"></span> Add another field</a>
+                                                   </span>
+
+                                        <!--deep agg -->
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <p class="m-b-1 m-t-1">The aggregation will only use the data that matches following conditions:</p>
+
+                                    <div class="row m-b-1" ng-repeat="filter in agg.filters">
+
+                                        <div class="col-xs-11">
+
+                                            <select class="form-control slim-input"
+                                                    ng-model="filter.type"
+                                                    ng-change="chart.filterChange(filter)"
+                                                    ng-options="item.type as item.name for item in chart.metricFilterTypes"></select>
+
+
+                                            <input type="text" ng-model="filter.name" ng-change="chart.getCommonValues(agg, filter)" uib-typeahead="tag for tag in chart.commonTags" placeholder="Tag name" class="form-control slim-input" ng-show="filter.type == 'tag'"
+                                                   autocomplete="off"/>
+
+                                            <select ng-model="filter.op" ng-options="o[0] as o[1] for o in chart.operators" class="form-control slim-input" ng-show="filter.type == 'tag'"></select>
+
+                                            <input type="text" name="value" ng-model="filter.value" placeholder="Value" class="form-control" ng-show="filter.type != 'namespace'" uib-typeahead="val for val in chart.commonValues[agg.id + '.' + filter.name]"/>
+
+                                            <input type="text" name="value" ng-model="filter.value" placeholder="Namespace to filter on" uib-typeahead="ns for ns in chart.commonNamespaces" class="form-control" ng-show="filter.type == 'namespace'" autocomplete="off">
+
+                                        </div>
+                                        <div class="col-xs-1 text-right">
+                                            <a class="btn btn-danger" ng-click="chart.removeFilterFromAgg(agg, filter)"><span class="fa fa-trash-o"></span></a>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <a class="btn btn-info" ng-click="chart.addFilterToAgg(agg)"><span class="fa fa-plus-circle"></span> Add new rule</a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <hr/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-3 col-lg-2"></label>
+
+                    <div class=" col-sm-8 col-lg-10 form-inline">
+                        <a class="btn btn-info" ng-click="chart.addAggregation()">Add metric aggregation</a>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-4 col-lg-2"></label>
+
+                    <div class=" col-sm-8 col-lg-10">
+                        <a data-ui-sref='dashboard.update({resourceId: chart.dashboard.resource_id})' class="btn btn-default"><span class="fa fa-arrow-circle-left"></span> Go Back</a>
+                        <a class="btn btn-info" ng-click="chart.testChartData()">Preview</a>
+                        <a class="btn btn-success" ng-click="chart.saveChartData()">Save</a>
+                        <a class="btn btn-default" ng-click="chart.showJSON()" data-uib-tooltip="Copy/Paste configs between charts"><span class="fa fa-file-code-o"> JSON</span></a>
+                    </div>
+                </div>
+
+            </form>
+
+            <c3chart ng-if="!chart.isLoading.series" data-domid="chart" data-data="chart.chartC3Data" data-config="chart.chartC3Config">
+            </c3chart>
+
+        </div>
+
+    </div>
+
+
+</div>
+

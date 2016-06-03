@@ -1,0 +1,2 @@
+This software uses Rhodecode license.
+You are not allowed to use it without obtaining license from Rhodecode.

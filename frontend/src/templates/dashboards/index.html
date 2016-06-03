@@ -1,0 +1,81 @@
+<div class="row">
+    <div class="col-sm-3" id="menu">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Manage dashboards</div>
+            <ul class="list-group">
+                <li class="list-group-item"><a data-ui-sref="dashboard.update({resourceId:'new'})"><span class="fa fa-plus-circle"></span> Create dashboard</a></li>
+            </ul>
+        </div>
+    </div>
+
+
+
+    <div class="col-sm-9" ng-if="dashboards.loading.dashboard === true">
+        <ng-include src="'templates/loader.html'"></ng-include>
+    </div>
+
+    <div class="col-sm-9" ng-if="!dashboards.loading.dashboard">
+
+
+        <div class="alert alert-success">You can create business intelligence dashboards here, they are generated from your application log data or custom data you send to App Enlight via our <strong>logging api</strong></a>.
+            With the help of tags you can create all kinds of information charts for your organization
+        </div>
+
+        <div class="panel panel-default">
+
+            <div class="panel-heading">Owned Dashboards</div>
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th class="resource_name">Resource Name</th>
+                    <th class="options">Options</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="dashboard in dashboards.owned_dashboards">
+                    <td>{{dashboard.resource_name}}</td>
+                    <td>
+                        <a class="btn btn-default btn-sm" data-ui-sref='dashboard.view({resourceId: dashboard.uuid})'
+                           data-uib-tooltip="View dashboard"><span class="fa fa-area-chart"></span> View</a>
+                        <a class="btn btn-default btn-sm" data-ui-sref='dashboard.update({resourceId: dashboard.resource_id})'
+                           data-uib-tooltip="Update dashboard"><span class="fa fa-cog"></span> Update</a>
+                        <a class="btn btn-sm" ng-class="{'btn-default': !dashboard.public, 'btn-success': dashboard.public}"
+                           data-uib-tooltip="Set dashboard visibility to {{dashboard.public? 'PRIVATE': 'PUBLIC'}}"
+                           ng-click="dashboards.markPublic(dashboard)"><span class="fa fa-eye"></span></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="panel panel-default">
+
+            <div class="panel-heading">Dashboards shared with you</div>
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th class="resource_name">Resource Name</th>
+                    <th class="options">Options</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="dashboard in dashboards.viewable_dashboards">
+                    <td>{{dashboard.resource_name}}</td>
+                    <td>
+                        <a class="btn btn-default btn-sm" data-ui-sref='dashboard.view({resourceId: dashboard.uuid})' data-uib-tooltip="View dashboard"><span class="fa fa-area-chart"></span> View</a>
+                    <span ng-if="dashboard.permissions.indexOf('update') !== -1">
+                    <a class="btn btn-default btn-sm" data-ui-sref='dashboard.update({resourceId: dashboard.resource_id})' data-uib-tooltip="Update dashboard"><span class="fa fa-cog"></span> Update</a>
+                    <a class="btn btn-sm" ng-class="{'btn-default': !dashboard.public, 'btn-success': dashboard.public}" data-uib-tooltip="Set dashboard visibility to {{dashboard.public? 'PRIVATE': 'PUBLIC'}}"
+                       ng-click="dashboards.markPublic(dashboard)"><span class="fa fa-eye"></span></a>
+                    </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -31,8 +31,6 @@ import logging
 log = logging.getLogger(__name__)
 
 
-@view_config(route_name='dashboards_no_id', renderer='json',
-             permission='authenticated', request_method="GET")
 def index(request):
     if not request.user:
         return {"owned_dashboards": [],
@@ -67,8 +65,6 @@ def index(request):
             "viewable_dashboards": viewable_dashboards_list}
 
 
-@view_config(route_name='dashboards_no_id', renderer='json',
-             request_method="POST", permission='create_resources')
 def dashboard_POST(request):
     dashboard = Dashboard(
         resource_name=request.unsafe_json_body['resource_name'],
@@ -87,8 +83,6 @@ def dashboard_POST(request):
     return dashboard.get_dict()
 
 
-@view_config(route_name='dashboards', renderer='json',
-             request_method="PATCH", permission='edit')
 def dashboard_PATCH(request):
     dashboard = request.context.resource
     allowed_keys = ['public', 'resource_name', 'layout_config']
@@ -121,18 +115,12 @@ def dashboard_PATCH(request):
     return dashboard.get_dict(request=request)
 
 
-@view_config(route_name='dashboards',
-             context_type_class=('resource', Dashboard),
-             renderer='json', request_method="GET", permission='view')
 def dashboard_GET(request):
     resource = request.context.resource
     return resource.get_dict(request=request,
                              include_perms=request.has_permission('edit'))
 
 
-@view_config(route_name='dashboards',
-             context_type_class=('resource', Dashboard),
-             renderer='json', request_method="DELETE", permission='delete')
 def dashboard_DELETE(request):
     dashboard = request.context.resource
     actions = AlertChannelActionService.by_resource_id(dashboard.resource_id)
@@ -143,8 +131,6 @@ def dashboard_DELETE(request):
     return True
 
 
-@view_config(route_name='charts', request_method="PATCH", permission='edit',
-             context_type_class=('resource', Dashboard), renderer='json')
 def charts_PATCH(request):
     dashboard = request.context.resource
 
@@ -195,18 +181,6 @@ def charts_PATCH(request):
     return True
 
 
-@view_config(route_name='charts_property',
-             match_param='key=data',
-             context_type_class=('resource', Dashboard),
-             renderer='json', permission='view')
-@view_config(route_name='charts_property',
-             match_param='key=data_test_config',
-             context_type_class=('resource', Dashboard),
-             renderer='json', permission='view')
-@view_config(route_name='charts_property',
-             match_param='key=data_rule_config',
-             context_type_class=('resource', Dashboard),
-             renderer='json', permission='view')
 def charts_data(request):
     """
     Handles charting from UI generated charts
@@ -324,10 +298,6 @@ def charts_data(request):
     }
 
 
-@view_config(route_name='charts_event_rules_no_id',
-             context_type_class=('chart', DashboardChart),
-             request_method="POST",
-             renderer='json', permission='view')
 def charts_event_rules_POST(request):
     json_body = copy.deepcopy(request.unsafe_json_body)
     alert_action = AlertChannelAction(
@@ -343,10 +313,6 @@ def charts_event_rules_POST(request):
     return alert_action.get_dict(extended_info=True)
 
 
-@view_config(route_name='charts_event_rules_no_id',
-             context_type_class=('chart', DashboardChart),
-             request_method="GET",
-             renderer='json', permission='view')
 def charts_event_rules_GET(request):
     actions = AlertChannelActionService.by_other_id(request.context.chart.uuid)
     return [a.get_dict(extended_info=True) for a in actions]

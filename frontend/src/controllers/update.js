@@ -4,7 +4,7 @@
 angular.module('appenlight.controllers')
     .controller('DashboardUpdateController', DashboardUpdateController);
 
-DashboardUpdateController.$inspect = ['$state',
+DashboardUpdateController.$inject = ['$state',
     'stateHolder', 'UUIDProvider', '_', 'chartResultParser',
     'dashboardsResource', 'dashboardsNoIdResource', 'chartsPropertyResource'];
 
@@ -105,7 +105,6 @@ function DashboardUpdateController($state, stateHolder,
                     'chartId': chartId
                 }, gen_handler(chartId));
             }
-            ;
         });
     }
 
@@ -114,7 +113,7 @@ function DashboardUpdateController($state, stateHolder,
         _.each(row.columns, function (column) {
             column.width = width;
         });
-    }
+    };
 
     vm.rowRemove = function (rowIx) {
         vm.resource.layoutConfig.splice(rowIx, 1);
@@ -262,7 +261,7 @@ function DashboardUpdateController($state, stateHolder,
             resourceId: vm.resource.resource_id,
             chartId: column.chartId
         })
-    }
+    };
 
     vm.editChartAlert = function (column) {
         $state.go('dashboard.chart_alert', {

@@ -42,6 +42,11 @@ module.exports = function (grunt) {
                 nonull: true
             },
         },
+        uglify: {
+            dist: {
+                files: {}
+            }
+        },
         removelogging: {
             dist: {
                 src: 'build/' + packageInfo.name + '.js'
@@ -101,7 +106,7 @@ module.exports = function (grunt) {
         }
 
     };
-
+    grunt_conf_obj.uglify.dist.files['build/release/js/' + packageInfo.name + '.js'] = ['build/release/js/' + packageInfo.name + '.js']
     grunt.initConfig(grunt_conf_obj);
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -118,6 +123,6 @@ module.exports = function (grunt) {
     grunt.registerTask('styles', ['less']);
     grunt.registerTask('test', ['jshint', 'qunit']);
 
-    grunt.registerTask('default', ['ngtemplates', 'concat:dev', 'removelogging', 'concat:dist', 'less', 'copy:js', 'copy:css']);
+    grunt.registerTask('default', ['ngtemplates', 'concat:dev', 'removelogging', 'concat:dist', 'uglify', 'less', 'copy:js', 'copy:css']);
 
 };

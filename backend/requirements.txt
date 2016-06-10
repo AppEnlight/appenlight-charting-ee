@@ -1,2 +1,2 @@
-colander>=1.0b1
-
+colander>=1.2
+cython==0.24

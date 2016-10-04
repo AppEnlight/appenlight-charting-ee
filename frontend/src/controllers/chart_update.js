@@ -6,11 +6,11 @@ angular.module('appenlight.controllers')
 
 DashboardChartUpdateController.$inject = ['$state', '$uibModal',
     '_', 'chartResultParser', 'dashboardsResource', 'chartsResource',
-    'chartsPropertyResource', 'sectionViewResource', 'AeUser', 'AeConfig'];
+    'chartsPropertyResource', 'sectionViewResource', 'stateHolder', 'AeConfig'];
 
-function DashboardChartUpdateController($state, $uibModal, _, chartResultParser, dashboardsResource, chartsResource, chartsPropertyResource, sectionViewResource, AeUser, AeConfig) {
+function DashboardChartUpdateController($state, $uibModal, _, chartResultParser, dashboardsResource, chartsResource, chartsPropertyResource, sectionViewResource, stateHolder, AeConfig) {
     var vm = this;
-    vm.applications = AeUser.applications_map;
+    vm.applications = stateHolder.AeUser.applications_map;
     vm.loading = {dashboard: true};
     vm._ = _;
     // holds interval options for time histogram
@@ -268,7 +268,7 @@ function DashboardChartUpdateController($state, $uibModal, _, chartResultParser,
      * Main json config that will be sent to backend
      */
     vm.chartConfig = {
-        resource: AeUser.applications[0].resource_id,
+        resource: stateHolder.AeUser.applications[0].resource_id,
         datasource: 'logs',
         timeRange: '1M',
         startMoment: 'now',

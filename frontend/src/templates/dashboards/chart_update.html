@@ -35,7 +35,7 @@
                     <label class="control-label col-sm-3 col-lg-2">Application:</label>
 
                     <div class=" col-sm-9 col-lg-10 form-inline">
-                        <select ng-model="chart.chartConfig.resource" ng-change="chart.getCommonKeys()" ng-options="r.resource_id as r.resource_name for r in AeUser.applications" class="SelectField form-control input-sm"></select>
+                        <select ng-model="chart.chartConfig.resource" ng-change="chart.getCommonKeys()" ng-options="r.resource_id as r.resource_name for r in stateHolder.AeUser.applications" class="SelectField form-control input-sm"></select>
                     </div>
                 </div>
 

@@ -4,7 +4,7 @@
 
     <div class="pull-right">
         <a class="btn btn-default btn-sm"
-           ng-if="AeUser.hasContextPermission('update', dashboard.resource.current_permissions)"
+           ng-if="stateHolder.AeUser.hasContextPermission('update', dashboard.resource.current_permissions)"
            data-ui-sref='dashboard.update({resourceId: dashboard.resource.resource_id})'
            data-uib-tooltip="Update dashboard"><span class="fa fa-cog"></span> Update</a>
 

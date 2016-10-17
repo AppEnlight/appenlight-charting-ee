@@ -42,10 +42,6 @@ PLUGIN_DEFINITION = {
                'fulltext_indexer': None,
                'sqlalchemy_migrations': 'ae_charting_ee:migrations',
                'default_values_setter': None,
-               'top_nav': {
-                   'menu_dashboards_items': {'sref': 'dashboard.list',
-                                             'label': 'Custom Dashboards'}
-               },
                'javascript': {
                    'src': 'ae_charting_ee.js',
                    'angular_module': 'appenlight.plugins.ae_charting_ee'

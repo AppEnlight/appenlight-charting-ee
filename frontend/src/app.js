@@ -33,8 +33,11 @@ angular.module('appenlight.plugins.ae_charting_ee',
         templateUrl: '/ae_charting_ee/templates/dashboards/dashboard_update.html',
         controller: 'DashboardUpdateController as dashboard'
     });
-    
-}]).run(['stateHolder', function (stateHolder) {
 
-    
+}]).run(['stateHolder', 'AeConfig', function (stateHolder, AeConfig) {
+
+    AeConfig.topNav.menuDashboardsItems.push(
+        {'sref': 'dashboard.list', 'label': 'Custom Dashboards'}
+    );
+
 }]);

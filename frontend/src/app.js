@@ -35,9 +35,14 @@ angular.module('appenlight.plugins.ae_charting_ee',
     });
 
 }]).run(['stateHolder', 'AeConfig', function (stateHolder, AeConfig) {
-
-    AeConfig.topNav.menuDashboardsItems.push(
-        {'sref': 'dashboard.list', 'label': 'Custom Dashboards'}
-    );
+    /**
+     * register plugin in stateHolder
+     */
+    stateHolder.plugins.callables.push(function () {
+        console.log('ae_charting run()');
+        AeConfig.topNav.menuDashboardsItems.push(
+            {'sref': 'dashboard.list', 'label': 'Custom Dashboards'}
+        );
+    });
 
 }]);

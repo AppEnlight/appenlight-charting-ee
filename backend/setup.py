@@ -42,7 +42,7 @@ def _get_meta_var(name, data, callback_handler=None):
 with open(os.path.join(here, "src", "ae_charting_ee", "__init__.py"), "r") as _meta:
     _metadata = _meta.read()
 
-with open(os.path.join("src", "ae_charting_ee", "VERSION")) as _meta_version:
+with open(os.path.join(here, "VERSION")) as _meta_version:
     __version__ = _meta_version.read().strip()
 
 __license__ = _get_meta_var("__license__", _metadata)

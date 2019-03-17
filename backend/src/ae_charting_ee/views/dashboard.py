@@ -9,6 +9,9 @@ from datetime import datetime, timedelta
 from pyramid.httpexceptions import HTTPNotFound, HTTPUnprocessableEntity
 from pyramid.view import view_config
 
+from ziggurat_foundations.models.services.resource import ResourceService
+from ziggurat_foundations.models.services.user import UserService
+
 from appenlight.models import Datastores, DBSession
 from appenlight.models.alert_channel_action import AlertChannelAction
 from appenlight.models.services.alert_channel_action import AlertChannelActionService
@@ -35,8 +38,8 @@ def index(request):
     if not request.user:
         return {"owned_dashboards": [], "viewable_dashboards": []}
 
-    dashboards = request.user.resources_with_perms(
-        ["delete"], resource_types=["dashboard"]
+    dashboards = UserService.resources_with_perms(
+        request.user, ["delete"], resource_types=["dashboard"]
     )
     owned_dashboard_list = []
     owned_dashboard_ids = []
@@ -49,8 +52,8 @@ def index(request):
         owned_dashboard_list.append(ddict)
         owned_dashboard_ids.append(ddict["resource_id"])
 
-    viewable_dashboards = request.user.resources_with_perms(
-        ["view"], resource_types=["dashboard"]
+    viewable_dashboards = UserService.resources_with_perms(
+        request.user, ["view"], resource_types=["dashboard"]
     )
 
     for d in viewable_dashboards:
@@ -61,7 +64,7 @@ def index(request):
             include_keys=["resource_id", "resource_name", "uuid", "public"],
         )
         ddict["permissions"] = [
-            perm.perm_name for perm in d.perms_for_user(request.user)
+            perm.perm_name for perm in ResourceService.perms_for_user(d, request.user)
         ]
         viewable_dashboards_list.append(ddict)
 
@@ -145,8 +148,8 @@ def charts_PATCH(request):
     chart_config = json_body["config"]
     # for now just throw error in case something weird is found
 
-    applications = request.user.resources_with_perms(
-        ["view"], resource_types=["application"]
+    applications = UserService.resources_with_perms(
+        request.user, ["view"], resource_types=["application"]
     )
 
     # CRITICAL - this ensures our resultset is limited to only the ones
@@ -205,8 +208,8 @@ def charts_data(request):
     ):
         chart_config = copy.deepcopy(request.unsafe_json_body)
         # for now just throw error in case something weird is found
-        applications = request.user.resources_with_perms(
-            ["view"], resource_types=["application"]
+        applications = UserService.resources_with_perms(
+            request.user, ["view"], resource_types=["application"]
         )
 
         # CRITICAL - this ensures our resultset is limited to only the ones
@@ -258,7 +261,7 @@ def charts_data(request):
             "categories": [],
         }
     result = Datastores.es.search(
-        query, index=es_config["index_names"], doc_type="log", size=0
+        body=query, index=es_config["index_names"], doc_type="log", size=0
     )
     series, info_dict = parse_es_result(result, es_config, json_config=chart_config)
 

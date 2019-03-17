@@ -7,6 +7,7 @@ from pyramid.security import Allow, Everyone
 
 from pyramid.httpexceptions import HTTPNotFound
 from ziggurat_foundations.permissions import permission_to_04_acls
+from ziggurat_foundations.models.services.resource import ResourceService
 
 import appenlight.models.resource
 from appenlight.security import rewrite_root_perm, add_root_superperm
@@ -24,8 +25,6 @@ class DashboardFactory(object):
     """
 
     def __init__(self, request):
-        Resource = appenlight.models.resource.Resource
-
         self.__acl__ = []
         self.used_uuid = False
         # used_uuid is set to true if user who is normally not authorized to
@@ -36,13 +35,15 @@ class DashboardFactory(object):
             "resource_id", request.GET.get("resource_id")
         )
         resource_id = to_integer_safe(org_resource_id)
-        self.resource = Resource.by_resource_id(resource_id) if resource_id else None
+        self.resource = (
+            ResourceService.by_resource_id(resource_id) if resource_id else None
+        )
         if self.resource is None:
             self.resource = DashboardService.by_uuid(org_resource_id)
 
         if self.resource and request.user:
             self.__acl__ = self.resource.__acl__
-            permissions = self.resource.perms_for_user(request.user)
+            permissions = ResourceService.perms_for_user(self.resource, request.user)
             for perm_user, perm_name in permission_to_04_acls(permissions):
                 self.__acl__.append(rewrite_root_perm(perm_user, perm_name))
 
@@ -61,8 +62,6 @@ class ChartFactory(object):
     """
 
     def __init__(self, request):
-        Resource = appenlight.models.resource.Resource
-
         self.__acl__ = []
         self.used_uuid = False
         # used_uuid is set to true if user who is normally not authorized to
@@ -75,10 +74,10 @@ class ChartFactory(object):
         if not self.chart:
             raise HTTPNotFound()
 
-        self.resource = Resource.by_resource_id(self.chart.resource_id)
+        self.resource = ResourceService.by_resource_id(self.chart.resource_id)
         if self.resource and request.user:
             self.__acl__ = self.resource.__acl__
-            permissions = self.resource.perms_for_user(request.user)
+            permissions = ResourceService.perms_for_user(self.resource, request.user)
             for perm_user, perm_name in permission_to_04_acls(permissions):
                 self.__acl__.append(rewrite_root_perm(perm_user, perm_name))
 
@@ -97,8 +96,6 @@ class ChartAlertFactory(object):
     """
 
     def __init__(self, request):
-        Resource = appenlight.models.resource.Resource
-
         self.__acl__ = []
         self.used_uuid = False
         # used_uuid is set to true if user who is normally not authorized to
@@ -115,10 +112,10 @@ class ChartAlertFactory(object):
         if not self.chart:
             raise HTTPNotFound()
 
-        self.resource = Resource.by_resource_id(self.chart.resource_id)
+        self.resource = ResourceService.by_resource_id(self.chart.resource_id)
         if self.resource and request.user:
             self.__acl__ = self.resource.__acl__
-            permissions = self.resource.perms_for_user(request.user)
+            permissions = ResourceService.perms_for_user(self.resource, request.user)
             for perm_user, perm_name in permission_to_04_acls(permissions):
                 self.__acl__.append(rewrite_root_perm(perm_user, perm_name))
 

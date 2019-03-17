@@ -9,6 +9,7 @@ from appenlight.lib.utils import es_index_name_limiter
 from collections import OrderedDict, defaultdict
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta, MO, SU
+from ziggurat_foundations.models.services.user import UserService
 from appenlight.validators import LogSearchSchema, TagListSchema, accepted_search_params
 
 
@@ -30,8 +31,8 @@ def build_filter_settings_from_chart_config(
         resource_permissions = ["view"]
 
     if request and request.user:
-        applications = request.user.resources_with_perms(
-            resource_permissions, resource_types=["application"]
+        applications = UserService.resources_with_perms(
+            request.user, resource_permissions, resource_types=["application"]
         )
 
     # CRITICAL - this ensures our resultset is limited to only the ones

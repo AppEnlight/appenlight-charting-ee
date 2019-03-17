@@ -29,7 +29,7 @@ target_metadata = MetaData(naming_convention=NAMING_CONVENTION)
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-VERSION_TABLE_NAME = 'alembic_ae_charting_ee_version'
+VERSION_TABLE_NAME = "alembic_ae_charting_ee_version"
 
 
 def run_migrations_offline():
@@ -47,8 +47,11 @@ def run_migrations_offline():
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         transaction_per_migration=True,
-        url=url, target_metadata=target_metadata, literal_binds=True,
-        version_table=VERSION_TABLE_NAME)
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        version_table=VERSION_TABLE_NAME,
+    )
 
     with context.begin_transaction():
         context.run_migrations()
@@ -63,19 +66,21 @@ def run_migrations_online():
     """
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
-        prefix='sqlalchemy.',
-        poolclass=pool.NullPool)
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
 
     with connectable.connect() as connection:
         context.configure(
             transaction_per_migration=True,
             connection=connection,
             target_metadata=target_metadata,
-            version_table=VERSION_TABLE_NAME
+            version_table=VERSION_TABLE_NAME,
         )
 
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

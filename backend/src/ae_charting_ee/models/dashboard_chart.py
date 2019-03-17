@@ -6,7 +6,7 @@
 import copy
 import sqlalchemy as sa
 
-from sqlalchemy.dialects.postgres import JSON
+from sqlalchemy.dialects.postgresql import JSON
 from ziggurat_foundations.models.base import BaseModel
 
 from appenlight.models import Base

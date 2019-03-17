@@ -8,7 +8,6 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
-from Cython.Build import cythonize
 
 here = path.abspath(path.dirname(__file__))
 
@@ -47,35 +46,6 @@ __author__ = _get_meta_var('__author__', _metadata)
 __url__ = _get_meta_var('__url__', _metadata)
 
 
-def _get_cython_modules(root_path):
-    """Returns the list of cythonized modules."""
-
-    def _add_to_cython(dirpath, filename):
-        """Helper that indicates if the file should be cythonized"""
-        if filename == '__init__.py':
-            return False
-        if 'migrations/versions' in dirpath:
-            return False
-        root, ext = os.path.splitext(filename)
-        return ext == '.py'
-
-    # Return an empty list when cython is disabled.
-    if os.environ.get('CYTHONIZE') == '0':
-        return []
-
-    modules = []
-    sources = []
-
-    # Recurse into directories and add all python source files.
-    for dirpath, dirnames, files in os.walk(os.path.join('src')):
-        sources.extend([os.path.join(dirpath, f)
-                        for f in files
-                        if _add_to_cython(dirpath, f)])
-
-    modules.extend(cythonize(sources))
-    return modules
-
-
 setup(
     name='ae_charting_ee',
     version=__version__,
@@ -100,6 +70,5 @@ setup(
         'appenlight.plugins': [
             'ae_charting_ee = ae_charting_ee'
         ]
-    },
-    ext_modules=_get_cython_modules(here)
+    }
 )

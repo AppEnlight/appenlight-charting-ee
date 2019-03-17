@@ -89,7 +89,7 @@ def alert_chart(pkey, chart_uuid):
 
     if not es_config['index_names']:
         return
-    result = Datastores.es.search(es_config['query'],
+    result = Datastores.es.search(body=es_config['query'],
                                   index=es_config['index_names'],
                                   doc_type='log',
                                   size=0)
